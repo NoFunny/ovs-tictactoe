@@ -1,9 +1,7 @@
 package client;
 
-import java.awt.Font;
 import java.awt.Color;
 import java.awt.GridLayout;
-import java.awt.GridBagLayout;
 import java.awt.BorderLayout;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
@@ -16,20 +14,19 @@ import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 
-public class client {
+public class Client {
 
     private JFrame frame = new JFrame("Tic Tac Toe");
     private JLabel messageLabel = new JLabel("...");
 
-    private Square[] board = new Square[9];
-    private Square currentSquare;
+    private GameBoard[] board = new GameBoard[9];
+    private GameBoard currentGameBoard;
 
     private Socket socket;
     private Scanner in;
     private PrintWriter out;
 
-    public client(String serverAddress, String serverPort) throws Exception {
-
+    public Client(String serverAddress, String serverPort) throws Exception {
         socket = new Socket(serverAddress, Integer.parseInt(serverPort));
         in = new Scanner(socket.getInputStream());
         out = new PrintWriter(socket.getOutputStream(), true);
@@ -42,10 +39,10 @@ public class client {
         boardPanel.setLayout(new GridLayout(3, 3, 2, 2));
         for (var i = 0; i < board.length; i++) {
             final int j = i;
-            board[i] = new Square();
+            board[i] = new GameBoard();
             board[i].addMouseListener(new MouseAdapter() {
                 public void mousePressed(MouseEvent e) {
-                    currentSquare = board[j];
+                    currentGameBoard = board[j];
                     out.println("MOVE " + j);
                 }
             });
@@ -55,13 +52,14 @@ public class client {
     }
 
     /**
-     * The main thread of the client will listen for messages from the server. The
-     * first message will be a "WELCOME" message in which we receive our mark. Then
-     * we go into a loop listening for any of the other messages, and handling each
-     * message appropriately. The "VICTORY", "DEFEAT", "TIE", and
-     * "OTHER_PLAYER_LEFT" messages will ask the user whether or not to play another
-     * game. If the answer is no, the loop is exited and the server is sent a "QUIT"
-     * message.
+     *  Основной поток клиента будет прослушивать сообщения от сервера.
+     *  Первым сообщением будет сообщение «WELCOME»,
+     *  в котором мы получим нашу оценку. Затем мы переходим в цикл,
+     *  прослушивая любые другие сообщения и соответствующим образом
+     *  обрабатывая каждое сообщение. Сообщения «VICTORY», «DEFEAT», «TIE»
+     *  и «OTHER_PLAYER_LEFT» будут спрашивать пользователя,
+     *  играть ли в другую игру или нет. Если ответ отрицательный,
+     *  цикл завершается, и серверу отправляется сообщение «ВЫЙТИ».
      */
     public void play() throws Exception {
         try {
@@ -73,8 +71,8 @@ public class client {
                 response = in.nextLine();
                 if (response.startsWith("VALID_MOVE")) {
                     messageLabel.setText("Valid move, please wait");
-                    currentSquare.setText(mark);
-                    currentSquare.repaint();
+                    currentGameBoard.setText(mark);
+                    currentGameBoard.repaint();
                 } else if (response.startsWith("OPPONENT_MOVED")) {
                     var loc = Integer.parseInt(response.substring(15));
                     board[loc].setText(opponentMark);
@@ -105,28 +103,12 @@ public class client {
         }
     }
 
-    static class Square extends JPanel {
-        JLabel label = new JLabel();
-
-        public Square() {
-            setBackground(Color.white);
-            setLayout(new GridBagLayout());
-            label.setFont(new Font("Arial", Font.BOLD, 40));
-            add(label);
-        }
-
-        public void setText(char text) {
-            label.setForeground(text == 'X' ? Color.BLUE : Color.RED);
-            label.setText(text + "");
-        }
-    }
-
     public static void main(String[] args) throws Exception {
         if (args.length != 2) {
-            System.err.println("Pass the server IP or port as the sole command line argument");
+            System.err.println("Enter ip address and port\nUsage:\n\t127.0.0.1   123\n\t<address> <port>\n");
             return;
         }
-        client client = new client(args[0], args[1]);
+        Client client = new Client(args[0], args[1]);
         client.frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         client.frame.setSize(320, 320);
         client.frame.setVisible(true);
