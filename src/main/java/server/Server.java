@@ -9,7 +9,6 @@ import java.nio.channels.FileLock;
 import java.util.concurrent.Executors;
 
 public class Server {
-
     private static File f;
     private static FileChannel channel;
     private static FileLock lock;
@@ -17,6 +16,7 @@ public class Server {
     public static void main(String[] args) throws Exception {
         //Your application tasks here..
         connectionNewServer();
+
         try (var listener = new ServerSocket(Integer.parseInt(args[0]))) {
             System.out.println("Tic Tac Toe Server is Running on address: 127.0.0.1, port: "+listener.getLocalPort()+"...");
             var pool = Executors.newFixedThreadPool(200);
@@ -72,7 +72,6 @@ public class Server {
     }
 
     static class ShutdownHook extends Thread {
-
         public void run() {
             unlockFile();
         }
