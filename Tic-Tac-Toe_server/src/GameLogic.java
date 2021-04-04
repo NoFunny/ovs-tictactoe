@@ -40,7 +40,7 @@ public class GameLogic {
             }
         } else {
             System.out.println(ConsoleColors.RED_BOLD
-                    + "Получен неверный формат состояния ячеек."
+                    + "Received value of invalid format."
                     + ConsoleColors.RESET);
 
             return false;
@@ -76,14 +76,14 @@ public class GameLogic {
 
             } catch (NumberFormatException e) {
                 System.out.println(ConsoleColors.RED_BOLD
-                        + "Полученны неккоректные координаты хода."
+                        + "Received invalid coordinates of the opponent's move."
                         + ConsoleColors.RESET);
 
                 return false;
             }
         } else {
             System.out.println(ConsoleColors.RED_BOLD
-                    + "Полученны неккоректные координаты хода."
+                    + "Received invalid coordinates of the opponent's move."
                     + ConsoleColors.RESET);
 
             return false;

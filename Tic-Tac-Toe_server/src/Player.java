@@ -25,25 +25,25 @@ public class Player {
 
         try {
             System.out.println(ConsoleColors.YELLOW_BOLD
-                    + "\nОжидание подключения клиента..."
+                    + "\nWaiting for client connection..."
                     + ConsoleColors.RESET);
 
             clientSocket = serverSocket.accept();
         } catch (IOException e) {
             System.out.println(ConsoleColors.RED_BOLD
-                    + "Не удалось принять соединение с клиентом."
+                    + "Failed to connect to client."
                     + ConsoleColors.RESET);
             return;
         }
         System.out.print(ConsoleColors.GREEN_BOLD
-                + "Подключение подтверждено.\n"
+                + "Connection confirmed.\n"
                 + ConsoleColors.RESET);
         connection = true;
 
         host = clientSocket.getInetAddress().getHostAddress();
         port = clientSocket.getPort();
 
-        /********************Адрес подключенного клиента****************/
+        /******************** Connected client address ****************/
         System.out.println(ConsoleColors.GREEN
                 + "Host: " + host
                 + ConsoleColors.RESET);
@@ -57,7 +57,7 @@ public class Player {
             out = new DataOutputStream(clientSocket.getOutputStream());
         } catch (IOException e) {
             System.out.println(ConsoleColors.RED_BOLD
-                    + "Не удалось открыть каналы ввода/вывода для сокета "
+                    + "Could not open I / O pipes for socket "
                     + clientSocket.getInetAddress().getHostAddress()
                     + "-" + clientSocket.getPort() + "."
                     + ConsoleColors.RESET);
@@ -109,12 +109,12 @@ public class Player {
                 result = in.myReadUTF();
 
                 System.out.println(ConsoleColors.YELLOW
-                        + "Получены данные от клиента: "
+                        + "Received data from client: "
                         + ConsoleColors.RESET
                         + result);
             } catch (EOFException e) {
                 System.out.println(ConsoleColors.RED_BOLD
-                        + "Данные от клиента: " + host + " " + port + " полученны не полностью, проверьте соединение."
+                        + "Client data: " + host + " " + port + " incompletely received, check the connection."
                         + ConsoleColors.RESET);
                 try {
                     clientSocket.close();
@@ -124,7 +124,7 @@ public class Player {
                 }
             } catch (UTFDataFormatException e) {
                 System.out.println(ConsoleColors.RED_BOLD
-                        + "Данные от клиента: " + host + " " + port + " полученны в неверном формате."
+                        + "Client data: " + host + " " + port + " received in invalid format."
                         + ConsoleColors.RESET);
                 try {
                     clientSocket.close();
@@ -134,7 +134,7 @@ public class Player {
                 }
             } catch (IOException e) {
                 System.out.println(ConsoleColors.RED_BOLD
-                        + "Нет связи с клиентом: " + host + " " + port + "."
+                        + "No connection with the client: " + host + " " + port + "."
                         + ConsoleColors.RESET);
                 try {
                     clientSocket.close();
@@ -153,15 +153,15 @@ public class Player {
                 out.flush();
 
                 System.out.println(ConsoleColors.YELLOW
-                        + "Сообщение: "
+                        + "Message: "
                         + ConsoleColors.RESET
                         + message
                         + ConsoleColors.YELLOW
-                        + " отправленно клиенту " + host + "-" + port + "."
+                        + " sent to client " + host + "-" + port + "."
                         + ConsoleColors.RESET);
             } catch (IOException e) {
                 System.out.println(ConsoleColors.RED_BOLD
-                        + "Не удалось отправить сообщение клиенту " + host + "-" + port + "."
+                        + "Failed to send message to client" + host + "-" + port + "."
                         + ConsoleColors.RED_BOLD);
 
                 connection = false;

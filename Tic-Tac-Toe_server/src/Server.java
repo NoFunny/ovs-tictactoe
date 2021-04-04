@@ -89,7 +89,7 @@ public class Server {
 
             while (players[0].connection && players[1].connection) {
                 System.out.println(ConsoleColors.YELLOW_BOLD
-                        + "\nИгровое поле на сервере: " + board.toString()
+                        + "\nGame takes place on the server: " + board.toString()
                         + ConsoleColors.RESET);
 
                 char win = board.getWinner();
