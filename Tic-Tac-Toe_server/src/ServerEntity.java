@@ -1,18 +1,50 @@
+import org.w3c.dom.ls.LSOutput;
+
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
+import java.util.concurrent.atomic.DoubleAccumulator;
+import java.util.stream.IntStream;
 
 public class ServerEntity {
+    private ServerSocket serversSocket;
+    private ServerSocket clientsSocket;
+
+    public int initialization(Domain domain) {
+        try {
+            serversSocket = new ServerSocket(domain.port);
+            clientsSocket = new ServerSocket(domain.port - 100);
+
+            System.out.println(ConsoleColors.GREEN_BOLD
+                    + "Server initializing...\n"
+                    + ConsoleColors.GREEN
+                    + "\tServer port: " + domain.port + ".\n"
+                    + "\tClient port: " + (domain.port - 100)
+                    + ConsoleColors.RESET);
+            return 0;
+        } catch (IOException e) {
+            System.out.println("Port " + domain.port + " is busy.");
+            return -1;
+        }
+    }
+
+    public boolean isServerInitialized() {
+        if (serversSocket != null && clientsSocket != null
+                && !serversSocket.isClosed() && !clientsSocket.isClosed()) {
+            return true;
+        }
+        return false;
+    }
+
     class MySocket {
         private Socket socket;
         private DataOutputStream out;
         private MyDataInputStream in;
 
         private int port;
-
         private boolean online;
 
         private MySocket() {
@@ -24,20 +56,56 @@ public class ServerEntity {
 
             online = false;
         }
-    }
-    private MySocket socketsSList[] = new MySocket[ServersAddresses.Addresses.length];
-    private MySocket socketsCList[] = new MySocket[ServersAddresses.Addresses.length];
 
-    private ServerSocket serversSocket;
-    private ServerSocket clientsSocket;
+    }
 
     private ArrayList<MySocket> connectionList = new ArrayList<MySocket>();
+    public void waitConnect() {
+        Thread myThread = new Thread(() -> {
+            while (true) {
+                MySocket strSocket = new MySocket();
+
+                try {
+                    Socket tempSocket = null;
+
+                    tempSocket = serversSocket.accept();
+
+                    strSocket.socket = tempSocket;
+                    strSocket.out = new DataOutputStream(tempSocket.getOutputStream());
+                    strSocket.in = new MyDataInputStream(tempSocket.getInputStream());
+
+                    System.out.println(ConsoleColors.YELLOW_BOLD
+                            +"Open server connection on port: " + strSocket.socket.getPort() + "."
+                            + ConsoleColors.RESET);
+
+                    strSocket.online = true;
+
+                    connectionList.add(strSocket);
+
+                    if (Server.server.isGeneralServer()) {
+                        for (int i = 0; i < 2; i++) {
+                            if (Server.message[i] != null) {
+                                Server.server.sendToAnotherServers(Server.message[i].substring(0));
+                            }
+                        }
+                    }
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }, "Wait connection thread");
+
+        myThread.start();
+    }
+
+    private MySocket socketsSList[] = new MySocket[Domains.amountDomains];
+    private MySocket socketsCList[] = new MySocket[Domains.amountDomains];
 
     ServerEntity() {
         serversSocket = null;
         clientsSocket = null;
 
-        for (int i = 0; i < ServersAddresses.Addresses.length; i++) {
+        for (int i = 0; i < Domains.amountDomains; i++) {
             socketsCList[i] = new MySocket();
             socketsSList[i] = new MySocket();
         }
@@ -86,26 +154,22 @@ public class ServerEntity {
     public String onlineServersList() {
         StringBuffer list = new StringBuffer("");
 
-        for (int j = 0; j < ServersAddresses.Addresses.length; j++) {
+        for (int j = 0; j < Domains.domains.size(); j++) {
             if (socketsCList[j].online) {
                 list.append("1");
             } else {
                 list.append("0");
             }
         }
-
         return list.substring(0);
     }
 
     public boolean isGeneralServer() {
-        for (int i = 0; i < ServersAddresses.Addresses.length; i++) {
-            if (socketsCList[i].online == true
-                    && Integer.parseInt(ServersAddresses.Addresses[i][1]) < serversSocket.getLocalPort())
-            {
+        for (int i = 0; i < Domains.amountDomains; i++) {
+            if (socketsCList[i].online && Domains.domains.get(i).port < serversSocket.getLocalPort()) {
                 return false;
             }
         }
-
         return true;
     }
 
@@ -181,92 +245,18 @@ public class ServerEntity {
         return true;
     }
 
-
-    public int initialization(int serversNumber) {
-        int port = Integer.parseInt(ServersAddresses.Addresses[serversNumber][1]);
-
-        try {
-            clientsSocket = new ServerSocket(port - 100);
-            serversSocket = new ServerSocket(port);
-
-            System.out.println(ConsoleColors.GREEN_BOLD
-                    + "Создан сервер."
-                    + ConsoleColors.GREEN
-                    + "\n\tПорт для серверов: "
-                    + port + ".\n\tПорт для клиентов: " + (port - 100)
-                    + ConsoleColors.RESET);
-
-            return 0;
-        } catch (IOException e) {
-            System.out.println("Порт " + port + " занят.");
-
-            return -1;
-        }
-    }
-
-    public boolean isServerInitialized() {
-        if (serversSocket != null && clientsSocket != null
-                && !serversSocket.isClosed() && !clientsSocket.isClosed()) {
-            return true;
-        }
-
-        return false;
-    }
-
-    public void waitConnect() {
-        Thread myThread = new Thread(new Runnable() {
-            @Override
-            public void run() {
-                while (true) {
-                    MySocket strSocket = new MySocket();
-
-                    try {
-                        Socket tempSocket = null;
-
-                        tempSocket = serversSocket.accept();
-
-                        strSocket.socket = tempSocket;
-                        strSocket.out = new DataOutputStream(tempSocket.getOutputStream());
-                        strSocket.in = new MyDataInputStream(tempSocket.getInputStream());
-
-                        System.out.println(ConsoleColors.YELLOW_BOLD
-                                +"Сервер подключился к серверу: "
-                                + strSocket.socket.getPort() + "."
-                                + ConsoleColors.RESET);
-
-                        strSocket.online = true;
-
-                        connectionList.add(strSocket);
-
-                        if (Server.server.isGeneralServer()) {
-                            for (int i = 0; i < 2; i++) {
-                                if (Server.message[i] != null) {
-                                    Server.server.sendToAnotherServers(Server.message[i].substring(0));
-                                }
-                            }
-                        }
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
-                }
-            }
-        }, "Wait connection thread");
-
-        myThread.start();
-    }
-
     public void connectToOtherServers() {
         Thread myThread = new Thread(new Runnable() {
             @Override
             public void run() {
                 while (true) {
-                    for (int i = 0; i < ServersAddresses.Addresses.length; i++) {
+                    for (int i = 0; i < Domains.amountDomains; i++) {
                         try {
                             if (socketsCList[i].socket == null
-                                    && Integer.parseInt(ServersAddresses.Addresses[i][1]) != serversSocket.getLocalPort()) {
+                                    && Domains.domains.get(i).port != serversSocket.getLocalPort()) {
 
-                                socketsCList[i].socket = new Socket(ServersAddresses.Addresses[i][0],
-                                        Integer.parseInt(ServersAddresses.Addresses[i][1]));
+                                socketsCList[i].socket = new Socket(Domains.domains.get(i).hostname,
+                                        Domains.domains.get(i).port);
 
                                 socketsCList[i].out = new DataOutputStream(socketsCList[i].socket.getOutputStream());
                                 socketsCList[i].in = new MyDataInputStream(socketsCList[i].socket.getInputStream());
@@ -282,16 +272,12 @@ public class ServerEntity {
                         } catch (UnknownHostException e) {
                             System.out.println(ConsoleColors.RED_BOLD
                                     + "Не удалось определить IP адрес сервера: "
-                                    + ServersAddresses.Addresses[i][0] + "-"
-                                    + ServersAddresses.Addresses[i][1]
+                                    + Domains.domains.get(i).hostname + "-"
+                                    + Domains.domains.get(i).port
                                     + ConsoleColors.RESET);
 
                             closeSocket(socketsCList[i]);
                         } catch (IOException e) {
-                        /*    System.out.println("Не удалось подключиться к серверу: "
-                                    + ServersAddresses.Addresses[i][0] + "-"
-                                    + ServersAddresses.Addresses[i][1]);*/
-
                             closeSocket(socketsCList[i]);
                         }
                     }
