@@ -27,7 +27,7 @@ public class Client {
                         outputStream = new DataOutputStream(socket.getOutputStream());
                         inputStream = new MyDataInputStream(socket.getInputStream());
 
-                        System.out.println("Клиент подключился к серверу: "
+                        System.out.println("Clien connected to server: "
                                 + ServersList.ServersAddresses[i][0] + "-"
                                 + ServersList.ServersAddresses[i][1]);
 

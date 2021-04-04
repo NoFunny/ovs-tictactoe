@@ -22,22 +22,26 @@ public class GameInterface extends JFrame {
     private void createGUI() {
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
-        ImageIcon icon = new ImageIcon("res/icon.png");
+        ImageIcon icon = new ImageIcon("res/1.jpg");
         setIconImage(icon.getImage());
 
         JPanel mainPanel = new JPanel(new BorderLayout());
         add(mainPanel);
 
         JPanel gridPanel = new JPanel(new GridLayout(SIZE, SIZE, 2, 2));
-        gridPanel.setBackground(Color.GREEN);
+        gridPanel.setBackground(Color.BLACK);
 
-        statusLabel = new JLabel("Awaiting connection enemy...");
-        statusLabel.setPreferredSize(new Dimension(600, 40));
+        statusLabel = new JLabel("Awaiting connection opponent...");
+        statusLabel.setOpaque(true);
+        statusLabel.setBackground(Color.CYAN);
+        statusLabel.setPreferredSize(new Dimension(600, 20));
         statusLabel.setMinimumSize(new Dimension(100, 20));
 
         /*Лейбл для вывода ошибок, потом удалить*/
         extraLabel = new JLabel();
-        extraLabel.setPreferredSize(new Dimension(600, 40));
+        extraLabel.setPreferredSize(new Dimension(600, 20));
+        extraLabel.setOpaque(true);
+        extraLabel.setBackground(Color.CYAN);
         extraLabel.setMinimumSize(new Dimension(100, SIZE));
         extraLabel.setForeground(Color.RED);
 
@@ -54,6 +58,7 @@ public class GameInterface extends JFrame {
                 buttons[i][j] = new GameButton(i, j);
                 buttons[i][j].setMargin(new Insets(0, 0, 0, 0));
                 buttons[i][j].setEnabled(false);
+                buttons[i][j].setBackground(Color.CYAN);
                 gridPanel.add(buttons[i][j]);
             }
         }

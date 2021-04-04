@@ -62,7 +62,7 @@ public class Server {
                 } catch (InterruptedException exception) {
                     exception.printStackTrace();
                 }
-            } while (!server.isGeneralServer());
+            } while(!server.isGeneralServer());
 
             reservFlag = false;
 
@@ -73,7 +73,7 @@ public class Server {
             );
             boolean successRestore = false;
             for (int i = 0; i < 2; i++) {
-                if (players[i].connection == false)
+                if (!players[i].connection)
                     players[i].waitConnection(server.getClientsSocket());
 
                 if (message[i] != null) {

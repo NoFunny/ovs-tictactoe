@@ -1,5 +1,4 @@
 import javax.swing.*;
-import java.awt.*;
 import java.io.EOFException;
 import java.io.IOException;
 import java.io.UTFDataFormatException;
@@ -24,25 +23,25 @@ public class GameInput {
     }
 
     public boolean read(MyDataInputStream inputStream, Socket socket) {
-        System.out.println("Ждём ответ от сервера...");
+        System.out.println("Waiting for a response from the server...");
 
         String in = null;
 
         try {
             in = inputStream.myReadUTF();
 
-            System.out.println("Получено сообщение от сервера: " + in);
+            System.out.println("Received message from server: " + in);
         } catch (EOFException e) {
-            System.out.println("Данные от сервера " + Client.socket.getInetAddress().getHostName()
-                    + " " + Client.socket.getPort() + " полученны не полностью, проверьте соединение.");
+            System.out.println("Data from server " + Client.socket.getInetAddress().getHostName()
+                    + " " + Client.socket.getPort() + " received not completely, check the connection.");
 
             return false;
         } catch (UTFDataFormatException e) {
-            System.out.println("Данные от клиента " + Client.socket.getInetAddress().getHostName() + " " + Client.socket.getPort() + " полученны в неверном формате.");
+            System.out.println("Data from client " + Client.socket.getInetAddress().getHostName() + " " + Client.socket.getPort() + " received in the wrong format.");
 
             return false;
         } catch (IOException e) {
-            System.out.println("Нет связи с клиентом: " + Client.socket.getInetAddress().getHostName() + " " + Client.socket.getPort() + ".");
+            System.out.println("There is no connection with the client: " + Client.socket.getInetAddress().getHostName() + " " + Client.socket.getPort() + ".");
 
             return false;
         }
@@ -60,9 +59,9 @@ public class GameInput {
             if (args.length == 4) {
                 if (args[2].equals("_")) {
                     if (args[0].equals(args[1])) {
-                        gameInterface.setStatusLabel("Ваш ход (" + args[1] + ")");
+                        gameInterface.setStatusLabel("Your turn (" + args[1] + ")");
                     } else {
-                        gameInterface.setStatusLabel("Ход противника (" + args[1] + ")");
+                        gameInterface.setStatusLabel("Opponent's move (" + args[1] + ")");
                     }
 
                     setActiveBoard(args[0].equals(args[1]));
@@ -70,13 +69,13 @@ public class GameInput {
                     win = true;
 
                     if (args[2].equals(args[0])) {
-                        gameInterface.setStatusLabel("Вы победили!");
+                        gameInterface.setStatusLabel("You win!");
 
-                        System.out.println("Вы победили!");
+                        System.out.println("You win!");
                     } else {
-                        gameInterface.setStatusLabel("Вы проиграли!");
+                        gameInterface.setStatusLabel("You lose!");
 
-                        System.out.println("Вы проиграли!");
+                        System.out.println("You lose!");
                     }
 
                     setActiveBoard(false);
@@ -87,8 +86,8 @@ public class GameInput {
             } else if (args.length == 2) {
                 if (args[0].equals("error")) {
                     if (args[1].equals("opponent_connection")) {
-                        System.out.println("Оппонент отключился от сервера. Игра закончена.");
-                        gameInterface.setStatusLabel("Оппонент отключился от сервера. Игра закончена.");
+                        System.out.println("The opponent has disconnected from the server. Game over.");
+                        gameInterface.setStatusLabel("The opponent has disconnected from the server. Game over.");
                         try {
                             socket.close();
                             connection = false;
@@ -96,11 +95,11 @@ public class GameInput {
                             exception.printStackTrace();
                         }
                     } else if (args[1].equals("bad_data")) {
-                        System.out.println("Сервер получил подозрительные данные от клиента. " +
-                                "Сессия будет закрыта");
+                        System.out.println("The server received suspicious data from the client. " +
+                                "The session will be closed");
 
-                        gameInterface.setStatusLabel("Сервер получил подозрительные данные от одного из клиентов. " +
-                                "Игра закончена.");
+                        gameInterface.setStatusLabel("The server received suspicious data from one of the clients. " +
+                                "Game over.");
                         try {
                             socket.close();
                             connection = false;
@@ -127,8 +126,8 @@ public class GameInput {
     }
 
     private void badData(Socket socket) {
-        System.out.println("Плохие данные от сервера");
-        gameInterface.setStatusLabel("Подозрительное поведение сервера. Соединение будет разорвано.");
+        System.out.println("Bad data from server");
+        gameInterface.setStatusLabel("Suspicious server behavior. The connection will be dropped.");
         try {
             socket.close();
             connection = false;

@@ -22,13 +22,13 @@ public class GameLogic {
     }
 
     public String toString() {
-        String buffer = "";
+        StringBuilder buffer = new StringBuilder();
         for (int i = 0; i < SIZE; i++) {
             for (int j = 0; j < SIZE; j++) {
-                buffer += board[i][j];
+                buffer.append(board[i][j]);
             }
         }
-        return buffer;
+        return buffer.toString();
     }
 
     public boolean setBoard(String board2D) {
@@ -65,8 +65,8 @@ public class GameLogic {
 
         if (x_y.length == 2) {
             try {
-                int x = Integer.valueOf(x_y[0]);
-                int y = Integer.valueOf(x_y[1]);
+                int x = Integer.parseInt(x_y[0]);
+                int y = Integer.parseInt(x_y[1]);
 
                 if (board[x][y] != '_')
                     return true;
@@ -95,7 +95,7 @@ public class GameLogic {
     public char getWinner() {
         for (int i = 0; i < SIZE; i++) {
             for (int j = 0; j < SIZE; j++) {
-                if (checkFrom(i, j) == true)
+                if (checkFrom(i, j))
                     return board[i][j];
             }
         }

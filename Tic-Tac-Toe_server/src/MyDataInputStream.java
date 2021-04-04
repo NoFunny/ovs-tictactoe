@@ -11,13 +11,12 @@ public class MyDataInputStream extends DataInputStream {
         super(in);
     }
 
-    private byte bytearr[] = new byte[1];
-    private char chararr[] = new char[1];
+    private byte[] bytearr = new byte[1];
+    private char[] chararr = new char[1];
 
     public final String myReadUTF() throws IOException {
         return myReadUTF(this);
     }
-
 
     public static String myReadUTF(DataInput in) throws IOException {
         int utflen = in.readUnsignedShort(); //Считываем длину принимаемого сообщения;
@@ -87,7 +86,7 @@ public class MyDataInputStream extends DataInputStream {
                                 "malformed input around byte " + (count - 1));
                     chararr[chararr_count++] = (char) (((c & 0x0F) << 12) |
                             ((char2 & 0x3F) << 6) |
-                            ((char3 & 0x3F) << 0));
+                            ((char3 & 0x3F)));
                 }
                 default -> throw new UTFDataFormatException(
                         "malformed input around byte " + count);
