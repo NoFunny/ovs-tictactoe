@@ -1,7 +1,9 @@
 import java.io.DataOutputStream;
 import java.io.IOException;
+import java.lang.reflect.Array;
 import java.net.Socket;
 import java.net.UnknownHostException;
+import java.util.Arrays;
 
 public class Client {
 
@@ -16,21 +18,23 @@ public class Client {
            e.printStackTrace();
        }
 
-        for (int i = 0; i < ServersList.ServersAddresses.length; i++) {
+        String hostname;
+        Integer port;
+
+        for (int i = 0; i < Domains.domains.size(); i++) {
+            hostname = Domains.domains.get(i).hostname;
+            port = Domains.domains.get(i).port;
                 try {
                     if (outputStream != null) outputStream.close();
                     if (inputStream != null) inputStream.close();
                     if (socket != null && !socket.isClosed()) socket.close();
 
-                    if (ServersList.valid[i]) {
-                        socket = new Socket(ServersList.ServersAddresses[i][0], Integer.parseInt(ServersList.ServersAddresses[i][1]));
+                    if (Domains.valid[i]) {
+                        socket = new Socket(hostname, port);
                         outputStream = new DataOutputStream(socket.getOutputStream());
                         inputStream = new MyDataInputStream(socket.getInputStream());
 
-                        System.out.println("Clien connected to server: "
-                                + ServersList.ServersAddresses[i][0] + "-"
-                                + ServersList.ServersAddresses[i][1]);
-
+                        System.out.println("Clien connected to server: " + hostname + "-" + port);
                         System.out.println();
                         System.out.println("Input and output channels has been initialized.");
 
@@ -38,13 +42,9 @@ public class Client {
                     }
 
                 } catch (UnknownHostException e) {
-                    System.out.println("Failed was defined host IP address: "
-                            + ServersList.ServersAddresses[i][0] + "-"
-                            + ServersList.ServersAddresses[i][1]);
+                    System.out.println("Failed was defined host IP address: " + hostname + "-" + port);
                 } catch (IOException e) {
-                    System.out.println("Failed connecting to server: "
-                            + ServersList.ServersAddresses[i][0] + "-"
-                            + ServersList.ServersAddresses[i][1]);
+                    System.out.println("Failed connecting to server: " + hostname + "-" + port);
                 }
         }
         if (socket == null || socket.isClosed()) {
@@ -56,14 +56,13 @@ public class Client {
     }
 
     public static void main(String[] args) {
+        Domains.AddDomains(Domains.amountDomains);
+        Arrays.fill(Domains.valid, Boolean.TRUE);
+
         /*Создание окна*/
         GameInterface gameInterface = new GameInterface();
         gameInterface.pack();
         gameInterface.setVisible(true);
-
-        for (int i = 0; i < ServersList.ServersAddresses.length; i++) {
-            ServersList.valid[i] = true;
-        }
 
         if (createValidConnection() < 0) {
             gameInterface.setStatusLabel("Failed connecting to server.");

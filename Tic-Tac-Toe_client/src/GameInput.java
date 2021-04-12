@@ -111,9 +111,9 @@ public class GameInput {
                     for (int k = 0; k < args[1].length(); k++) {
                         if (args[1].charAt(k) == '1')
                         {
-                            ServersList.valid[k] = true;
+                            Domains.valid[k] = true;
                         } else if (args[1].charAt(k) == '0') {
-                            ServersList.valid[k] = false;
+                            Domains.valid[k] = false;
                         } else {
                             badData(socket);
                         }
