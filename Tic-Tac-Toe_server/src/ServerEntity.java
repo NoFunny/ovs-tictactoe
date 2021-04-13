@@ -225,6 +225,12 @@ public class ServerEntity {
                     en.printStackTrace();
                 }
             }
+        } else if (args.length == 3) {
+            if (args[0].equals("message")) {
+                for (int i = 0; i < Server.players.length; i++) {
+                    Server.message[i] = new StringBuffer("message/" + message + "/message");
+                }
+            }
         }
 
     }
@@ -233,7 +239,7 @@ public class ServerEntity {
         String[] args = message.split("/");
         if (args.length == 4) {
             gameboard.setCurrentMove(args[1].charAt(0));
-            if (gameboard.setBoard(args[3]) == false) {
+            if (!gameboard.setBoard(args[3])) {
                 System.out.println(ConsoleColors.RED_BOLD
                         + "Invalid data received from the server."
                         + ConsoleColors.RESET);

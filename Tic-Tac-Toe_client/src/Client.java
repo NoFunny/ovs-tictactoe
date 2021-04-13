@@ -33,8 +33,7 @@ public class Client {
                         socket = new Socket(hostname, port);
                         outputStream = new DataOutputStream(socket.getOutputStream());
                         inputStream = new MyDataInputStream(socket.getInputStream());
-
-                        System.out.println("Clien connected to server: " + hostname + "-" + port);
+                        System.out.println("Client connected to server: " + hostname + "-" + port);
                         System.out.println();
                         System.out.println("Input and output channels has been initialized.");
 

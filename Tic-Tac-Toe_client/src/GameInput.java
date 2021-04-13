@@ -83,6 +83,13 @@ public class GameInput {
 
 
                 setBoard(args[3]);
+            } else if (args.length == 3) {
+                if (args[0].equals("message") && !args[1].isEmpty()) {
+                    System.out.println(gameInterface.getComponent(0));
+
+                    JTextArea textArea = gameInterface.getTextAreaForReceiveMessage();
+                    textArea.setText(textArea.getText() + "\n" + "Opponent: " + args[1]);
+                }
             } else if (args.length == 2) {
                 if (args[0].equals("error")) {
                     if (args[1].equals("opponent_connection")) {

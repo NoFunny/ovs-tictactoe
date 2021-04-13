@@ -4,9 +4,10 @@ import java.awt.*;
 public class GameInterface extends JFrame {
 
     public GameButton[][] buttons;
-    private JLabel statusLabel, extraLabel;
+    private JLabel statusLabel;
+    ChatInterface chatInterface = new ChatInterface();
     private final int SIZE = 3;
-
+    public JPanel mainPanel = new JPanel(new BorderLayout());
     public GameInterface() {
         super("Tic-Tac-Toe");
         createGUI();
@@ -15,9 +16,7 @@ public class GameInterface extends JFrame {
     public void setStatusLabel(String status){
         statusLabel.setText(status);
     }
-    public void setExtraLabel(String status){
-        statusLabel.setText(status);
-    }
+    public JTextArea getTextAreaForReceiveMessage() { return chatInterface.textArea;}
 
     private void createGUI() {
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -25,7 +24,7 @@ public class GameInterface extends JFrame {
         ImageIcon icon = new ImageIcon("res/1.jpg");
         setIconImage(icon.getImage());
 
-        JPanel mainPanel = new JPanel(new BorderLayout());
+//        JPanel mainPanel = new JPanel(new BorderLayout());
         add(mainPanel);
 
         JPanel gridPanel = new JPanel(new GridLayout(SIZE, SIZE, 2, 2));
@@ -37,19 +36,13 @@ public class GameInterface extends JFrame {
         statusLabel.setPreferredSize(new Dimension(600, 20));
         statusLabel.setMinimumSize(new Dimension(100, 20));
 
-        /*Лейбл для вывода ошибок, потом удалить*/
-        extraLabel = new JLabel();
-        extraLabel.setPreferredSize(new Dimension(600, 20));
-        extraLabel.setOpaque(true);
-        extraLabel.setBackground(Color.CYAN);
-        extraLabel.setMinimumSize(new Dimension(100, SIZE));
-        extraLabel.setForeground(Color.RED);
-
         gridPanel.setPreferredSize(new Dimension(600, 600));
 
         mainPanel.add(statusLabel, BorderLayout.NORTH);
         mainPanel.add(gridPanel, BorderLayout.CENTER);
-        mainPanel.add(extraLabel, BorderLayout.SOUTH);
+        chatInterface.initChatGUI(mainPanel);
+//        System.out.println(mainPanel.getComponent(2));
+//        SplitPane  = 2 component
 
         buttons = new GameButton[SIZE][];
         for (int i = 0; i < SIZE; i++) {

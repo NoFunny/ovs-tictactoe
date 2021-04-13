@@ -137,12 +137,20 @@ public class Server {
                     if (currentMove == null)
                         continue;
                     move = currentMove;
+                    if (move.lastIndexOf("message") != -1) {
+                        if (i == 0)
+                            players[1].send(move);
+                        else
+                            players[0].send(move);
+                    }
                 }
 
                 if (move != null) {
-                    if (!board.process(move)) {
-                        for (int i = 0; i < 2; i++)
-                            players[i].send("error/bad_data");
+                    if ( move.lastIndexOf("message") == -1) {
+                        if (!board.process(move)) {
+                            for (int i = 0; i < 2; i++)
+                                players[i].send("error/bad_data");
+                        }
                     }
                 } else {
                     for (int i = 0; i < 2; i++)
